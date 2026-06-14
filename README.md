@@ -46,10 +46,10 @@ python3 main.py
 GitHub Actions runs:
 
 - Python smoke tests across supported Python versions
-- PyInstaller one-file macOS binary builds
+- PyInstaller one-file macOS binary builds for Intel (`x86_64`) and Apple Silicon (`arm64`)
 - artifact upload for generated binaries
 
-Tagged releases (`v*`) also attach the PyInstaller archives to a GitHub Release.
+Tagged releases (`v*`) attach the PyInstaller archives to the GitHub Release page.
 
 ## Development
 

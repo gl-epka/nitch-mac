@@ -32,8 +32,16 @@ jobs:
           python main.py --no-nerd
 
   pyinstaller:
-    name: PyInstaller macOS binary
-    runs-on: macos-latest
+    name: PyInstaller macOS ${{ matrix.arch }} binary
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-13
+            arch: x86_64
+          - os: macos-14
+            arch: arm64
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -50,13 +58,13 @@ jobs:
       - name: Package artifact
         run: |
           mkdir -p artifacts
-          cp dist/nitch-mac artifacts/nitch-mac-macos
+          cp dist/nitch-mac artifacts/nitch-mac-macos-${{ matrix.arch }}
           cd artifacts
-          zip nitch-mac-macos.zip nitch-mac-macos
+          zip nitch-mac-macos-${{ matrix.arch }}.zip nitch-mac-macos-${{ matrix.arch }}
       - uses: actions/upload-artifact@v4
         with:
-          name: nitch-mac-macos
-          path: artifacts/nitch-mac-macos.zip
+          name: nitch-mac-macos-${{ matrix.arch }}
+          path: artifacts/nitch-mac-macos-${{ matrix.arch }}.zip
 
   release:
     name: Upload release artifacts
@@ -71,3 +79,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: release-artifacts/**/*.zip
+          fail_on_unmatched_files: true
