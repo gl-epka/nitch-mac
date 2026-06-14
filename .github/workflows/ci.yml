@@ -32,12 +32,8 @@ jobs:
           python main.py --no-nerd
 
   pyinstaller:
-    name: PyInstaller macOS binary (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-13, macos-14]
+    name: PyInstaller macOS binary
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -54,13 +50,13 @@ jobs:
       - name: Package artifact
         run: |
           mkdir -p artifacts
-          cp dist/nitch-mac artifacts/nitch-mac-${{ matrix.os }}
+          cp dist/nitch-mac artifacts/nitch-mac-macos
           cd artifacts
-          zip nitch-mac-${{ matrix.os }}.zip nitch-mac-${{ matrix.os }}
+          zip nitch-mac-macos.zip nitch-mac-macos
       - uses: actions/upload-artifact@v4
         with:
-          name: nitch-mac-${{ matrix.os }}
-          path: artifacts/nitch-mac-${{ matrix.os }}.zip
+          name: nitch-mac-macos
+          path: artifacts/nitch-mac-macos.zip
 
   release:
     name: Upload release artifacts
