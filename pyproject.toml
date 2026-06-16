@@ -1,6 +1,6 @@
 [project]
 name = "gletch"
-version = "0.3.0"
+version = "0.4.0"
 description = "Python system-fetch utility for macOS"
 readme = "README.md"
 requires-python = ">=3.9"

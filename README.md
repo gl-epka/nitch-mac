@@ -27,7 +27,7 @@ curl -fsSL https://raw.githubusercontent.com/gl-epka/gletch/main/install.sh | BI
 To install from a specific release tag:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/gl-epka/gletch/main/install.sh | RELEASE=v0.3.0 sh
+curl -fsSL https://raw.githubusercontent.com/gl-epka/gletch/main/install.sh | RELEASE=v0.4.0 sh
 ```
 
 ## Usage

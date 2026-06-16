@@ -19,7 +19,7 @@ import subprocess
 import pwd
 from datetime import timedelta
 
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 
 # ── ANSI ──────────────────────────────────────────────────────────────────────
 RESET = "\033[0m"
