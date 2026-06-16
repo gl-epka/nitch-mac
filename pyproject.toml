@@ -1,13 +1,13 @@
 [project]
-name = "nitch-mac"
+name = "gletch"
 version = "0.3.0"
-description = "Python system-fetch utility for macOS inspired by nitch"
+description = "Python system-fetch utility for macOS"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = []
 
 [project.scripts]
-nitch-mac = "main:main"
+gletch = "main:main"
 
 [build-system]
 requires = ["hatchling"]

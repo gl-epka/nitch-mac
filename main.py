@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-nitch-mac — Python port of nitch for macOS
-  github.com/unxsh/nitch → ported to Python 3 / macOS
+gletch — system fetch utility for macOS
 
 Usage:
-  python3 nitch_mac.py            # Nerd Font icons
-  python3 nitch_mac.py --no-nerd  # plain ASCII icons
-  python3 nitch_mac.py --help
-  python3 nitch_mac.py --version
+  gletch            # Nerd Font icons
+  gletch --no-nerd  # plain ASCII icons
+  gletch --help
+  gletch --version
 """
 
 import os
@@ -48,7 +47,7 @@ BX_V  = "│"   # vertical      │
 DOT   = "●"   # colors dot    ●
 
 
-# ── Per-row value colors (matches nitch rainbow) ──────────────────────────────
+# ── Per-row value colors ─────────────────────────────────────────────────────
 ROW_COLORS = [
     fg(203),  # user   — coral red
     fg(221),  # hname  — yellow
@@ -83,6 +82,7 @@ PLAIN = {k: "> " for k in NERD}
 
 # ── macOS version map ─────────────────────────────────────────────────────────
 MACOS_NAMES = {
+    27: "Golden Gate",
     26: "Tahoe",
     15: "Sequoia",
     14: "Sonoma",
@@ -96,6 +96,13 @@ MACOS_NAMES = {
 
 # ── ASCII art for each version name (font: figlet "standard") ─────────────────
 MACOS_ART = {
+    "Golden Gate": [
+        "   ______      __    __             ______      __      ",
+        "  / ____/___  / /___/ /__  ____    / ____/___ _/ /____  ",
+        " / / __/ __ \\/ / __  / _ \\/ __ \\  / / __/ __ `/ __/ _ \\ ",
+        "/ /_/ / /_/ / / /_/ /  __/ / / / / /_/ / /_/ / /_/  __/ ",
+        "\\____/\\____/_/\\__,_/\\___/_/ /_/  \\____/\\__,_/\\__/\\___/  ",
+    ],
     "Tahoe": [
         "  ______      __             ",
         " /_  __/___ _/ /_  ____  ___ ",
@@ -298,7 +305,7 @@ def get_memory() -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def color_dots() -> str:
-    """Colored circle dots like nitch."""
+    """Colored circle dots."""
     dot_colors = [fg(7), fg(203), fg(215), fg(114), fg(74), fg(74), fg(141), fg(246)]
     return "  ".join(f"{c}{DOT}{RESET}" for c in dot_colors)
 
@@ -331,7 +338,7 @@ def draw(nerd: bool = True) -> None:
         (icons["mem"],    "memory", get_memory()),
     ]
 
-    # ── Version-name ASCII art on TOP (left-aligned, like original nitch) ──────
+    # ── Version-name ASCII art on TOP ─────────────────────────────────────────
     for line in get_logo_lines():
         stripped = line.rstrip()
         if stripped:
@@ -359,7 +366,7 @@ def draw(nerd: bool = True) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 HELP = f"""\
-nitch-mac v{VERSION} — system fetch for macOS
+gletch v{VERSION} — system fetch for macOS
 
 Flags:
   -f, --fetch     show system info (default)
@@ -376,7 +383,7 @@ def main() -> None:
             print(HELP)
             return
         if arg in ("-v", "--version"):
-            print(f"nitch-mac v{VERSION}")
+            print(f"gletch v{VERSION}")
             return
         if arg == "--no-nerd":
             nerd = False

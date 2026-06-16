@@ -50,21 +50,21 @@ jobs:
       - name: Install PyInstaller
         run: python -m pip install --upgrade pip pyinstaller
       - name: Build one-file binary
-        run: pyinstaller --clean --onefile --name nitch-mac main.py
+        run: pyinstaller --clean --onefile --name gletch main.py
       - name: Smoke test binary
         run: |
-          ./dist/nitch-mac --version
-          ./dist/nitch-mac --help
+          ./dist/gletch --version
+          ./dist/gletch --help
       - name: Package artifact
         run: |
           mkdir -p artifacts
-          cp dist/nitch-mac artifacts/nitch-mac-macos-${{ matrix.arch }}
+          cp dist/gletch artifacts/gletch-macos-${{ matrix.arch }}
           cd artifacts
-          zip nitch-mac-macos-${{ matrix.arch }}.zip nitch-mac-macos-${{ matrix.arch }}
+          zip gletch-macos-${{ matrix.arch }}.zip gletch-macos-${{ matrix.arch }}
       - uses: actions/upload-artifact@v4
         with:
-          name: nitch-mac-macos-${{ matrix.arch }}
-          path: artifacts/nitch-mac-macos-${{ matrix.arch }}.zip
+          name: gletch-macos-${{ matrix.arch }}
+          path: artifacts/gletch-macos-${{ matrix.arch }}.zip
 
   release:
     name: Upload release artifacts
