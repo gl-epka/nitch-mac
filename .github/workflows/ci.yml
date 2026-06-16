@@ -32,16 +32,10 @@ jobs:
           python main.py --no-nerd
 
   pyinstaller:
-    name: PyInstaller macOS ${{ matrix.arch }} binary
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: macos-13
-            arch: x86_64
-          - os: macos-14
-            arch: arm64
+    name: PyInstaller macOS arm64 binary
+    runs-on: macos-14
+    env:
+      ARCH: arm64
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -58,13 +52,13 @@ jobs:
       - name: Package artifact
         run: |
           mkdir -p artifacts
-          cp dist/gletch artifacts/gletch-macos-${{ matrix.arch }}
+          cp dist/gletch artifacts/gletch-macos-${ARCH}
           cd artifacts
-          zip gletch-macos-${{ matrix.arch }}.zip gletch-macos-${{ matrix.arch }}
+          zip gletch-macos-${ARCH}.zip gletch-macos-${ARCH}
       - uses: actions/upload-artifact@v4
         with:
-          name: gletch-macos-${{ matrix.arch }}
-          path: artifacts/gletch-macos-${{ matrix.arch }}.zip
+          name: gletch-macos-arm64
+          path: artifacts/gletch-macos-arm64.zip
 
   release:
     name: Upload release artifacts

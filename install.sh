@@ -16,9 +16,8 @@ fi
 
 case "$ARCH" in
   arm64) ASSET_ARCH="arm64" ;;
-  x86_64) ASSET_ARCH="x86_64" ;;
   *)
-    echo "error: unsupported macOS architecture: $ARCH" >&2
+    echo "error: release binaries are available for Apple Silicon (arm64) Macs only" >&2
     exit 1
     ;;
 esac
@@ -39,6 +38,36 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
+run_with_spinner() {
+  MESSAGE="$1"
+  shift
+
+  if [ -t 1 ]; then
+    "$@" &
+    PID="$!"
+    FRAMES='|/-\\'
+    INDEX=0
+
+    while kill -0 "$PID" 2>/dev/null; do
+      INDEX=$(( (INDEX + 1) % 4 ))
+      FRAME="$(printf '%s' "$FRAMES" | cut -c $((INDEX + 1)))"
+      printf '\r%s %s' "$FRAME" "$MESSAGE"
+      sleep 0.1
+    done
+
+    if wait "$PID"; then
+      printf '\r✓ %s\033[K\n' "$MESSAGE"
+      return 0
+    fi
+
+    printf '\r✗ %s\033[K\n' "$MESSAGE"
+    return 1
+  fi
+
+  echo "$MESSAGE"
+  "$@"
+}
+
 if ! command -v unzip >/dev/null 2>&1; then
   echo "error: unzip is required" >&2
   exit 1
@@ -46,17 +75,16 @@ fi
 
 mkdir -p "$BIN_DIR"
 
-echo "Downloading ${URL}"
 if command -v curl >/dev/null 2>&1; then
-  curl -fL "$URL" -o "$ZIP_PATH"
+  run_with_spinner "Downloading ${ASSET_NAME}" curl -fsSL "$URL" -o "$ZIP_PATH"
 elif command -v wget >/dev/null 2>&1; then
-  wget -O "$ZIP_PATH" "$URL"
+  run_with_spinner "Downloading ${ASSET_NAME}" wget -qO "$ZIP_PATH" "$URL"
 else
   echo "error: curl or wget is required" >&2
   exit 1
 fi
 
-unzip -q "$ZIP_PATH" -d "$TMP_DIR"
+run_with_spinner "Extracting ${ASSET_NAME}" unzip -q "$ZIP_PATH" -d "$TMP_DIR"
 
 if [ -f "${TMP_DIR}/gletch-macos-${ASSET_ARCH}" ]; then
   BINARY="${TMP_DIR}/gletch-macos-${ASSET_ARCH}"
@@ -71,7 +99,7 @@ if [ -z "${BINARY:-}" ] || [ ! -f "$BINARY" ]; then
   exit 1
 fi
 
-install -m 0755 "$BINARY" "$TARGET"
+run_with_spinner "Installing ${BIN_NAME}" install -m 0755 "$BINARY" "$TARGET"
 
 echo "Installed ${BIN_NAME} to ${TARGET}"
 echo "Run: ${BIN_NAME} --help"

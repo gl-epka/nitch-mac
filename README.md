@@ -10,7 +10,7 @@ It prints macOS version art, host/user details, kernel, uptime, shell, package c
 curl -fsSL https://raw.githubusercontent.com/gl-epka/gletch/main/install.sh | sh
 ```
 
-The installer downloads the latest PyInstaller binary from GitHub Releases for your Mac architecture (`arm64` or `x86_64`).
+The installer downloads the latest Apple Silicon (`arm64`) PyInstaller binary from GitHub Releases.
 
 By default this installs `gletch` to `~/.local/bin`. Make sure that directory is in your `PATH`:
 
@@ -54,12 +54,11 @@ The source is tested on Python 3.9 through 3.13 on macOS.
 GitHub Actions runs:
 
 - Python smoke tests across supported Python versions
-- PyInstaller one-file macOS binary builds for Intel (`x86_64`) and Apple Silicon (`arm64`)
-- artifact upload for generated binaries
+- PyInstaller one-file macOS binary build for Apple Silicon (`arm64`)
+- artifact upload for the generated binary
 
-Tagged releases (`v*`) attach the PyInstaller archives to the GitHub Release page. The installer expects these release assets:
+Tagged releases (`v*`) attach the PyInstaller archive to the GitHub Release page. The installer expects this release asset:
 
-- `gletch-macos-x86_64.zip`
 - `gletch-macos-arm64.zip`
 
 ## Development
