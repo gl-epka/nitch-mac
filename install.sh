@@ -4,6 +4,7 @@ set -eu
 REPO="${REPO:-gl-epka/gletch}"
 RELEASE="${RELEASE:-latest}"
 BIN_DIR="${BIN_DIR:-$HOME/.local/bin}"
+APP_DIR="${APP_DIR:-$HOME/.local/share/gletch}"
 BIN_NAME="${BIN_NAME:-gletch}"
 
 OS="$(uname -s)"
@@ -23,6 +24,7 @@ case "$ARCH" in
 esac
 
 ASSET_NAME="${ASSET_NAME:-gletch-macos-${ASSET_ARCH}.zip}"
+APP_NAME="gletch-macos-${ASSET_ARCH}"
 if [ "$RELEASE" = "latest" ]; then
   URL="https://github.com/${REPO}/releases/latest/download/${ASSET_NAME}"
 else
@@ -31,6 +33,7 @@ fi
 
 TMP_DIR="$(mktemp -d)"
 ZIP_PATH="${TMP_DIR}/${ASSET_NAME}"
+INSTALL_APP_DIR="${APP_DIR}/${APP_NAME}"
 TARGET="${BIN_DIR}/${BIN_NAME}"
 
 cleanup() {
@@ -73,7 +76,7 @@ if ! command -v unzip >/dev/null 2>&1; then
   exit 1
 fi
 
-mkdir -p "$BIN_DIR"
+mkdir -p "$BIN_DIR" "$APP_DIR"
 
 if command -v curl >/dev/null 2>&1; then
   run_with_spinner "Downloading ${ASSET_NAME}" curl -fsSL "$URL" -o "$ZIP_PATH"
@@ -86,22 +89,22 @@ fi
 
 run_with_spinner "Extracting ${ASSET_NAME}" unzip -q "$ZIP_PATH" -d "$TMP_DIR"
 
-if [ -f "${TMP_DIR}/gletch-macos-${ASSET_ARCH}" ]; then
-  BINARY="${TMP_DIR}/gletch-macos-${ASSET_ARCH}"
-elif [ -f "${TMP_DIR}/gletch" ]; then
-  BINARY="${TMP_DIR}/gletch"
+if [ -x "${TMP_DIR}/${APP_NAME}/gletch" ]; then
+  EXTRACTED_APP_DIR="${TMP_DIR}/${APP_NAME}"
+elif [ -x "${TMP_DIR}/gletch/gletch" ]; then
+  EXTRACTED_APP_DIR="${TMP_DIR}/gletch"
 else
-  BINARY="$(find "$TMP_DIR" -type f ! -name "*.zip" | head -n 1)"
-fi
-
-if [ -z "${BINARY:-}" ] || [ ! -f "$BINARY" ]; then
-  echo "error: binary not found in release archive" >&2
+  echo "error: gletch executable not found in release archive" >&2
   exit 1
 fi
 
-run_with_spinner "Installing ${BIN_NAME}" install -m 0755 "$BINARY" "$TARGET"
+rm -rf "$INSTALL_APP_DIR"
+run_with_spinner "Installing ${BIN_NAME}" cp -R "$EXTRACTED_APP_DIR" "$INSTALL_APP_DIR"
+chmod 0755 "${INSTALL_APP_DIR}/gletch"
+ln -sf "${INSTALL_APP_DIR}/gletch" "$TARGET"
 
 echo "Installed ${BIN_NAME} to ${TARGET}"
+echo "App files: ${INSTALL_APP_DIR}"
 echo "Run: ${BIN_NAME} --help"
 case ":$PATH:" in
   *":$BIN_DIR:"*) ;;

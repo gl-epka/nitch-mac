@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.14
 """
-gletch — system fetch utility for macOS
+gletch — system fetch utility for macOS, inspired by nitch
 
 Usage:
   gletch            # Nerd Font icons
@@ -19,7 +19,7 @@ import subprocess
 import pwd
 from datetime import timedelta
 
-VERSION = "0.4.0"
+VERSION = "0.5.0"
 
 # ── ANSI ──────────────────────────────────────────────────────────────────────
 RESET = "\033[0m"
@@ -34,8 +34,7 @@ def bg(n: int) -> str:
 
 
 # ── Box-drawing chars ─────────────────────────────────────────────────────────
-# Named constants (literal glyphs) so they never sit inside an f-string {}.
-# Backslash escapes inside f-string braces break on Python < 3.12.
+# Named constants keep box drawing glyphs readable.
 BX_TL = "╭"   # top-left      ╭
 BX_TR = "╮"   # top-right     ╮
 BX_BL = "╰"   # bottom-left   ╰

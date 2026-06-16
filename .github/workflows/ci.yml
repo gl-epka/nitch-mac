@@ -11,28 +11,8 @@ permissions:
   contents: write
 
 jobs:
-  python-tests:
-    name: Python ${{ matrix.python-version }} smoke tests
-    runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Compile
-        run: python -m py_compile main.py
-      - name: Smoke test CLI flags
-        run: |
-          python main.py --version
-          python main.py --help
-          python main.py --no-nerd
-
   pyinstaller:
-    name: PyInstaller macOS arm64 binary
+    name: PyInstaller macOS arm64 onedir
     runs-on: macos-14
     env:
       ARCH: arm64
@@ -40,21 +20,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Install PyInstaller
         run: python -m pip install --upgrade pip pyinstaller
-      - name: Build one-file binary
-        run: pyinstaller --clean --onefile --name gletch main.py
+      - name: Build onedir binary
+        run: pyinstaller --clean --onedir --name gletch main.py
       - name: Smoke test binary
         run: |
-          ./dist/gletch --version
-          ./dist/gletch --help
+          ./dist/gletch/gletch --version
+          ./dist/gletch/gletch --help
       - name: Package artifact
         run: |
           mkdir -p artifacts
-          cp dist/gletch artifacts/gletch-macos-${ARCH}
+          cp -R dist/gletch artifacts/gletch-macos-${ARCH}
           cd artifacts
-          zip gletch-macos-${ARCH}.zip gletch-macos-${ARCH}
+          zip -r gletch-macos-${ARCH}.zip gletch-macos-${ARCH}
       - uses: actions/upload-artifact@v4
         with:
           name: gletch-macos-arm64
@@ -63,7 +43,7 @@ jobs:
   release:
     name: Upload release artifacts
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [python-tests, pyinstaller]
+    needs: [pyinstaller]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
